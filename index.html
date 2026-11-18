@@ -1,0 +1,299 @@
+```html
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaspoll Bed - Pusat Jual Beli Kasur Berkualitas</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar & subtle transitions */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .card-hover { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-blue-600 selection:text-white">
+
+    <!-- Toast Notification Container (Menggantikan alert()) -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 sm:h-20">
+                <!-- Brand Logo -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-slate-900 to-blue-700 text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-bed text-lg sm:text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 block leading-none">Gaspoll Bed</span>
+                        <span class="text-[11px] sm:text-xs font-medium text-blue-600 tracking-wide">Pusat Kasur & Tidur Nyaman</span>
+                    </div>
+                </a>
+
+                <!-- Navigation Links & Admin Button -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 mr-2">
+                        <a href="#katalog" class="hover:text-blue-600 transition-colors">Katalog & Harga</a>
+                        <a href="#info-pemesanan" class="hover:text-blue-600 transition-colors">Cara Pemesanan</a>
+                        <a href="#pembayaran" class="hover:text-blue-600 transition-colors">Metode Pembayaran</a>
+                    </nav>
+
+                    <a href="https://wa.me/6289665165123?text=Halo%20Admin%20Gaspoll%20Bed,%20saya%20ingin%20bertanya%20tentang%20produk%20kasur." target="_blank" rel="noopener noreferrer"
+                       class="hidden sm:inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold px-3.5 py-2.5 rounded-xl shadow-sm transition-all">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>0896-6516-5123</span>
+                    </a>
+
+                    <button id="btn-admin-trigger" onclick="handleAdminTrigger()"
+                            class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold px-3.5 py-2.5 rounded-xl shadow-sm transition-all cursor-pointer">
+                        <i id="admin-btn-icon" class="fa-solid fa-lock text-amber-400"></i>
+                        <span id="admin-btn-text">Admin</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Admin Control Panel (Hidden by Default, Unlocked with Token 1234) -->
+    <section id="admin-panel" class="hidden bg-slate-900 text-white border-b-4 border-amber-500 shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Admin Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-xl font-bold text-white">Panel Pengaturan Admin</h2>
+                            <span class="px-2.5 py-0.5 text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full">Terverifikasi</span>
+                        </div>
+                        <p class="text-sm text-slate-400">Kelola foto produk, daftar harga per ukuran, dan ketersediaan stok toko Gaspoll Bed.</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <button onclick="openProductFormModal()" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow transition cursor-pointer">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Tambah Kasur Baru</span>
+                    </button>
+                    <button onclick="confirmResetData()" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium px-3.5 py-2.5 rounded-xl border border-slate-700 transition cursor-pointer">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Reset Default</span>
+                    </button>
+                    <button onclick="logoutAdmin()" class="inline-flex items-center gap-2 bg-rose-600/90 hover:bg-rose-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition cursor-pointer">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Keluar Admin</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Quick Inventory Table -->
+            <div class="mt-6 overflow-x-auto bg-slate-800/60 rounded-2xl border border-slate-700">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-700 text-xs uppercase tracking-wider text-slate-400 bg-slate-800">
+                            <th class="py-3.5 px-4">Foto & Nama Kasur</th>
+                            <th class="py-3.5 px-4">Daftar Ukuran & Harga</th>
+                            <th class="py-3.5 px-4">Stok</th>
+                            <th class="py-3.5 px-4 text-right">Aksi Pengaturan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body" class="divide-y divide-slate-700/70 text-sm">
+                        <!-- Rendered via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 text-white">
+        <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(#60a5fa 1px, transparent 1px); background-size: 24px 24px;"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs sm:text-sm font-medium">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>Buka Setiap Hari • Beli Langsung di Toko atau Antar ke Rumah</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                        Tidur Lebih Nyenyak dengan Kasur Pilihan di <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Gaspoll Bed</span>
+                    </h1>
+                    <p class="text-slate-300 text-base sm:text-lg max-w-2xl leading-relaxed">
+                        Tersedia berbagai jenis dan ukuran kasur berkualitas tinggi dengan harga transparan. Pesan mudah lewat WhatsApp, siap diantar langsung sampai ke rumah Anda atau ambil langsung di toko kami.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3.5 pt-2">
+                        <a href="#katalog" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3.5 rounded-xl shadow-lg shadow-blue-600/30 transition-all">
+                            <i class="fa-solid fa-tags"></i>
+                            <span>Lihat Daftar Harga Kasur</span>
+                        </a>
+                        <a href="https://wa.me/6289665165123?text=Halo%20Gaspoll%20Bed,%20saya%20mau%20order%20kasur." target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-3.5 rounded-xl shadow-lg shadow-emerald-600/20 transition-all">
+                            <i class="fa-brands fa-whatsapp text-xl"></i>
+                            <span>Order WA: 089665165123</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Highlight Info Card -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-circle-info text-blue-400"></i>
+                            <span>Informasi Layanan Gaspoll Bed</span>
+                        </h3>
+                        <div class="space-y-4 text-sm">
+                            <div class="flex items-start gap-3.5 bg-slate-900/50 p-3.5 rounded-2xl border border-white/10">
+                                <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-store"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-white">Datang Langsung ke Toko</p>
+                                    <p class="text-slate-300 text-xs mt-0.5 leading-relaxed">Cek kualitas & coba langsung kenyamanan kasur di toko Gaspoll Bed (08.00 – 21.00 WIB).</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3.5 bg-slate-900/50 p-3.5 rounded-2xl border border-white/10">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-truck-fast"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-white">Pesan Online & Antar Sampai Rumah</p>
+                                    <p class="text-slate-300 text-xs mt-0.5 leading-relaxed">Order praktis lewat WhatsApp <span class="text-emerald-300 font-semibold">089665165123</span>, armada kami siap antar sampai depan rumah Anda.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3.5 bg-slate-900/50 p-3.5 rounded-2xl border border-white/10">
+                                <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-white">Pembayaran Fleksibel: DANA atau Cash</p>
+                                    <p class="text-slate-300 text-xs mt-0.5 leading-relaxed">Mendukung pembayaran non-tunai via transfer <span class="text-sky-300 font-semibold">DANA</span> maupun <span class="text-amber-300 font-semibold">Cash / Tunai</span> (di toko / saat barang sampai).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Katalog & List Harga Kasur -->
+    <main id="katalog" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <!-- Section Title & Filter Bar -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Katalog Produk & Daftar Harga</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">Pilih Kasur & Ukuran Sesuai Kebutuhan</h2>
+                <p class="text-slate-600 text-sm sm:text-base mt-1">Klik pilihan ukuran pada masing-masing kasur untuk melihat harga spesifik dan memesan via WhatsApp.</p>
+            </div>
+
+            <!-- Search & Filter -->
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="search-input" oninput="renderCatalog()" placeholder="Cari jenis kasur..."
+                           class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                </div>
+                <select id="stock-filter" onchange="renderCatalog()"
+                        class="px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                    <option value="all">Semua Stok</option>
+                    <option value="available">Tersedia (Ready)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+            <!-- Product Cards rendered dynamically via JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-16 bg-white rounded-3xl border border-slate-200">
+            <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-bed"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800">Produk kasur tidak ditemukan</h3>
+            <p class="text-slate-500 text-sm mt-1">Coba ubah kata kunci pencarian atau hubungi admin kami di WhatsApp.</p>
+        </div>
+
+        <!-- Ringkasan Tabel Harga Lengkap -->
+        <section class="mt-16 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-6 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-xl font-extrabold text-slate-900">Ringkasan Daftar Harga Berdasarkan Jenis & Ukuran</h3>
+                    <p class="text-sm text-slate-500 mt-1">Perbandingan harga seluruh tipe dan ukuran kasur di toko Gaspoll Bed.</p>
+                </div>
+                <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 self-start sm:self-auto">
+                    <i class="fa-solid fa-check-circle"></i> Harga Terupdate Otomatis
+                </span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-500">
+                            <th class="py-4 px-6">Jenis / Nama Kasur</th>
+                            <th class="py-4 px-6">Pilihan Ukuran</th>
+                            <th class="py-4 px-6">Harga</th>
+                            <th class="py-4 px-6">Status Stok</th>
+                            <th class="py-4 px-6 text-right">Pesan Cepat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="price-summary-body" class="divide-y divide-slate-100 text-sm">
+                        <!-- Rendered dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Cara Pemesanan & Metode Pembayaran Section -->
+        <section id="info-pemesanan" class="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Waktu & Bentuk Pemesanan -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-5">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <h3 class="text-xl font-extrabold text-slate-900">Waktu & Bentuk Pemesanan</h3>
+                <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+                    Toko <strong>Gaspoll Bed</strong> melayani pembelian kasur dengan dua cara fleksibel sesuai kenyamanan Anda:
+                </p>
+                <div class="mt-6 space-y-4">
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 font-bold">1</div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm">Pemesanan Langsung di Toko Gaspoll Bed</h4>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                Kunjungi toko kami langsung pada jam 
